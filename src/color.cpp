@@ -49,6 +49,11 @@ uint32_t		get_color(double currIter, int set, SDL_PixelFormat *format)
 		colour.blue = (16 * pow((1 - currIter), 4) + pow(currIter, 1) * 255);
 		colour.green = (16 * pow((1 - currIter), 4) + pow(currIter, 1) * 255);
 		break;
+	case 3:
+		colour.red = 255 / currIter;
+		colour.blue = 255 / currIter;
+		colour.green = 255 / currIter;
+		break;
 	}
 	colour.alpha = 0xff;
 	return SDL_MapRGBA(format, colour.red, colour.green, colour.blue, colour.alpha);

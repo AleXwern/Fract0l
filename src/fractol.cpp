@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/13 15:52:31 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/05 21:44:26 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/05 22:59:19 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,10 @@ void			fractol_main(t_fractol *frc)
 	while (1)
 	{
 		if (SDL_WaitEvent(&events))
+		{
 			handle_keyboard(events.key, frc);
+			handle_mouse(events.button, events.motion, frc);
+		}
 		thread_core(frc);
 	}
 }

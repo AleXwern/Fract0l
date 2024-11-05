@@ -6,13 +6,15 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 21:01:55 by AleXwern          #+#    #+#             */
-/*   Updated: 2024/11/05 23:25:58 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/06 00:17:53 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.hpp"
 #include "value.hpp"
 #include <stdio.h>
+
+t_complex	oldpos;
 
 void			handle_keyboard(SDL_KeyboardEvent event, t_fractol *frc)
 {
@@ -59,27 +61,57 @@ void			handle_keyboard(SDL_KeyboardEvent event, t_fractol *frc)
 		return;
 	case SDL_SCANCODE_R:
 		set_default(frc);
+		break;
+	case SDL_SCANCODE_1:
+	case SDL_SCANCODE_2:
+	case SDL_SCANCODE_3:
+	case SDL_SCANCODE_4:
+	case SDL_SCANCODE_5:
+	case SDL_SCANCODE_6:
+	case SDL_SCANCODE_7:
+	case SDL_SCANCODE_8:
+	case SDL_SCANCODE_9:
+	case SDL_SCANCODE_0:
+		frc->iter = (event.keysym.scancode - 29) * 10;
+		printf("Iteratiuns %d\n", frc->iter);
+		break;
 	default:
 		return;
 	}
 	#pragma GCC diagnostic pop
 }
 
-void	handle_mouse(SDL_MouseButtonEvent event, SDL_MouseMotionEvent position, t_fractol *frc)
+void	handle_mouse(SDL_Event *event, t_fractol *frc)
 {
 	static bool			isPressed = false;
-	static t_complex	oldpos;
 	t_complex			delta;
 
-	isPressed = event.button == 1 ? true : false;
+	isPressed = event->button.button == 1 ? true : false;
 	if (isPressed)
 	{
-		delta = {(frc->max.real - frc->min.real) * ((oldpos.real - position.x) / WINX),
-				 (frc->max.imaginary - frc->min.imaginary) * ((oldpos.imaginary - position.y) / WINY)};
+		delta = {(frc->max.real - frc->min.real) * ((oldpos.real - event->motion.x) / WINX),
+				 (frc->max.imaginary - frc->min.imaginary) * ((oldpos.imaginary - event->motion.y) / WINY)};
 		frc->min.real += delta.real;
 		frc->max.real += delta.real;
 		frc->min.imaginary -= delta.imaginary;
 		frc->max.imaginary -= delta.imaginary;
 	}
-	oldpos = {static_cast<double>(position.x), static_cast<double>(position.y)};
+	oldpos = {static_cast<double>(event->motion.x), static_cast<double>(event->motion.y)};
+}
+
+void	handle_mousewheel(SDL_MouseWheelEvent *event, t_fractol *frc)
+{
+	double		zoom;
+	t_complex	target;
+
+	if (event->y > 0)
+		zoom = 1.0 * 0.9;
+	else
+		zoom = 1.0 / 0.9;
+	target = {1.00 * oldpos.real / (WINX / (frc->max.real - frc->min.real)) + frc->min.real,
+			-1.0 * oldpos.imaginary / (WINY / (frc->max.imaginary - frc->min.imaginary)) + frc->max.imaginary};
+	frc->min.real = ((frc->min.real - target.real) * zoom) + target.real;
+	frc->min.imaginary = ((frc->min.imaginary - target.imaginary) * zoom) + target.imaginary;
+	frc->max.real = ((frc->max.real - target.real) * zoom) + target.real;
+	frc->max.imaginary = ((frc->max.imaginary - target.imaginary) * zoom) + target.imaginary;
 }

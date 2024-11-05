@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/07 13:12:21 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/05 22:59:06 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/06 00:08:40 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ typedef struct		s_fractol
 	int				start;
 	t_color			color;
 	int				fractol;
-	double			zoom;
 	int				iter;
 	int				colourset;
 	int				ishelp;
@@ -107,6 +106,7 @@ uint32_t			get_color(double currIter, int set, SDL_PixelFormat *format);
 t_complex			set_complex(double rn, double in);
 
 void				handle_keyboard(SDL_KeyboardEvent event, t_fractol *frc);
-void				handle_mouse(SDL_MouseButtonEvent event, SDL_MouseMotionEvent position, t_fractol *frc);
+void				handle_mouse(SDL_Event *event, t_fractol *frc);
+void				handle_mousewheel(SDL_MouseWheelEvent *event, t_fractol *frc);
 
 #endif

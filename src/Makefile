@@ -6,12 +6,12 @@
 #    By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/02 20:21:52 by AleXwern          #+#    #+#              #
-#    Updated: 2024/11/05 21:07:24 by AleXwern         ###   ########.fr        #
+#    Updated: 2024/11/06 00:09:07 by AleXwern         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 FLAG	= -m64 -no-pie -Wall -Wextra -Werror -MMD
-SRCFILE	= color.cpp define_set.cpp events.cpp fractol.cpp key_input.cpp main.cpp mou_input.cpp
+SRCFILE	= color.cpp define_set.cpp events.cpp fractol.cpp key_input.cpp main.cpp
 OBJ		= $(addprefix ./obj/,$(SRCFILE:.cpp=.o))
 DEPNS	= $(OBJ:.o=.d)
 INCLS	= -I ../includes -I ../Libft/includes -I C:\SDL\SDL2-2.0.12\include

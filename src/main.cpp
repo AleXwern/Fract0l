@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/07 13:18:02 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/05 21:40:04 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/06 00:08:34 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ void			set_default(t_fractol *frc)
 			(double)WINY / (double)WINX;
 	frc->jul = set_complex(-0.4, 0.6);
 	frc->color.set = 0;
-	frc->zoom = 1.0;
 	frc->iter = 30;
 	frc->colourset = 0;
 }

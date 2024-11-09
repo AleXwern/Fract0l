@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/07 13:18:02 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/06 00:08:34 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/10 00:26:40 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,9 @@ void			set_default(t_fractol *frc)
 	frc->color.set = 0;
 	frc->iter = 30;
 	frc->colourset = 0;
+	frc->currPixel = 0;
+	frc->donePixel = 0;
+	frc->redefine = 0xff;
 }
 
 /*

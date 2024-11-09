@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/07 13:24:47 by anystrom          #+#    #+#             */
-/*   Updated: 2024/10/24 21:24:44 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/09 23:34:10 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@
 /*
 ** Window size.
 */
-# define WINX		700
-# define WINY		700
+# define WINX		704
+# define WINY		704
 
 /*
 ** Tagged keys.

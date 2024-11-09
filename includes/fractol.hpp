@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/07 13:12:21 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/06 00:08:40 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/10 00:42:13 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,16 @@ typedef struct		s_color
 	};
 }					t_color;
 
+struct			s_fractal
+{
+	int			iter;
+	t_complex	max;
+	t_complex	min;
+	t_complex	factor;
+	t_complex	c;
+	t_complex	jul;
+};
+
 /*
 ** General toolbox for handling information.
 ** void *mlx	= generic mlx pointer.
@@ -76,9 +86,10 @@ typedef struct		s_fractol
 	SDL_Renderer	*renderer;
 	SDL_Surface		*surface;
 	SDL_Texture		*texture;
+	SDL_mutex		*mutex;
 	uint8_t			threads;
-	int				start;
 	t_color			color;
+	uint8_t			redefine;
 	int				fractol;
 	int				iter;
 	int				colourset;
@@ -89,7 +100,26 @@ typedef struct		s_fractol
 	t_complex		factor;
 	t_complex		c;
 	t_complex		jul;
+	uint32_t		currPixel;
+	uint32_t		donePixel;
 }					t_fractol;
+
+class 				Fractol
+{
+public:
+	Fractol(t_fractol *frc);
+	
+	void			redefine_fracal(t_fractol *frc);
+	void			frc_draw(t_fractol *frc);
+private:
+	void			set_pixel(t_fractol *frc, SDL_Surface *surface, int x, int y);
+
+	s_fractal		fractal;
+	int				(*fractolDef)(s_fractal*);
+	uint8_t			id;
+};
+
+
 
 void				error_out(const char *msg);
 void				fractol_main(t_fractol *frc);
@@ -108,5 +138,12 @@ t_complex			set_complex(double rn, double in);
 void				handle_keyboard(SDL_KeyboardEvent event, t_fractol *frc);
 void				handle_mouse(SDL_Event *event, t_fractol *frc);
 void				handle_mousewheel(SDL_MouseWheelEvent *event, t_fractol *frc);
+
+int					event_thread(void *ptr);
+
+int					frc_tricorn(s_fractal *frc);
+int					frc_mandelbrot(s_fractal *frc);
+int					frc_bship(s_fractal *frc);
+int					frc_julia(s_fractal *frc);
 
 #endif

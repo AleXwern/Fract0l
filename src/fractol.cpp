@@ -6,19 +6,45 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/13 15:52:31 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/05 23:59:05 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/10 00:42:12 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.hpp"
-# include "value.hpp"
+#include "value.hpp"
+#include "events.hpp"
 #include <stdio.h>
 
-constexpr int threads = 12;
+constexpr int threads = 8;
 
-/*
-** Creates and sets DOUBLE values into complex number presentation.
-*/
+Fractol::Fractol(t_fractol *frc)
+{
+	id = 1 << SDL_GetThreadID(NULL);
+	redefine_fracal(frc);
+}
+
+void	Fractol::redefine_fracal(t_fractol *frc)
+{
+	fractal.iter = frc->iter;
+	fractal.max = frc->max;
+	fractal.min = frc->min;
+	fractal.jul = frc->jul;
+	switch (frc->fractol)
+	{
+	case 0:
+		fractolDef = frc_mandelbrot;
+		break;
+	case 1:
+		fractolDef = frc_julia;
+		break;
+	case 2:
+		fractolDef = frc_bship;
+		break;
+	default:
+		fractolDef = frc_tricorn;
+		break;
+	}
+}
 
 t_complex		set_complex(double rn, double in)
 {
@@ -29,116 +55,89 @@ t_complex		set_complex(double rn, double in)
 	return (cn);
 }
 
-/*
-** I determines a current XY position since DATA is 1D array.
-** Gets color palette based on iteration and sets the palette into pixel.
-*/
-
-static void		set_pixel(t_fractol *frc, SDL_Surface *surface, int x, int y)
+void		Fractol::set_pixel(t_fractol *frc, SDL_Surface *surface, int x, int y)
 {
-	uint32_t endCol = get_color(define_set(frc) / 50.0f, frc->colourset, surface->format);
+	uint32_t endCol = get_color(fractolDef(&fractal) / 50.0f, frc->colourset, surface->format);
 	uint32_t *surfacedata = (uint32_t*)surface->pixels;
 	surfacedata[WINX * y + x] = endCol;
 }
 
-/*
-** Bread and butter fratal calculation.
-** First sets a set FACTOR which is then used to calculate
-** C with every single pixel that is analyzed (aka all 1M in 1000x1000)
-*/
-
-static void		frc_draw(t_fractol *frc)
+void		Fractol::frc_draw(t_fractol *frc)
 {
-	int			x;
+	int			x = 0;
+	int			pixel;
 
-	frc->factor = set_complex((frc->max.real - frc->min.real) / WINX,
-			(frc->max.imaginary - frc->min.imaginary) / WINY);
-	while (frc->start < WINY)
+	SDL_LockMutex(frc->mutex);
+	pixel = frc->currPixel;
+	frc->currPixel++;
+	SDL_UnlockMutex(frc->mutex);
+	if (pixel >= WINY)
 	{
-		x = 0;
-		frc->c.imaginary = frc->max.imaginary - frc->start * frc->factor.imaginary;
-		while (x < WINX)
-		{
-			frc->c.real = frc->min.real + x * frc->factor.real;
-			set_pixel(frc, frc->surface, x, frc->start);
-			x++;
-		}
-		frc->start += threads;
+		redefine_fracal(frc);
+		SDL_Delay(10);
+		return;
 	}
+	fractal.factor = set_complex((fractal.max.real - fractal.min.real) / WINX,
+			(fractal.max.imaginary - fractal.min.imaginary) / WINY);
+	fractal.c.imaginary = fractal.max.imaginary - pixel * fractal.factor.imaginary;
+	while (x < WINX)
+	{
+		fractal.c.real = fractal.min.real + x * fractal.factor.real;
+		set_pixel(frc, frc->surface, x, pixel);
+		x++;
+	}
+	SDL_LockMutex(frc->mutex);
+	frc->donePixel++;
+	SDL_UnlockMutex(frc->mutex);
 }
 
-static int		frc_draw_entry(void *frc)
+static int		frc_draw_entry(void *data)
 {
-	frc_draw(static_cast<t_fractol*>(frc));
+	t_fractol	*frc = static_cast<t_fractol*>(data);
+	Fractol		fractol(frc);
+
+	while (1)
+	{
+		fractol.frc_draw(frc);
+	}
 	return (0);
 }
 
-/*
-** Heart of the system.
-** PTHREAD is a bonus.
-** makes X amount of threads and copies of FRC, set's an area they are
-** responsible for.
-** THREAD and FRAC are malloced and then freed after everything is done.
-** Malloc was the easiest way of doing this since thread amount was
-** to be made modifiedable.
-*/
 void			thread_core(t_fractol *frc)
 {
 	SDL_Thread*	thread[threads];
-	t_fractol	frac[threads];
 	int			i;
 
 	i = 0;
 	while (i < threads)
 	{
-		frac[i] = *frc;
-		frac[i].start = i;
-		thread[i] = SDL_CreateThread(frc_draw_entry, "Render Thread", (void*)&frac[i]);
+		thread[i] = SDL_CreateThread(frc_draw_entry, "Render Thread", frc);
 		if (thread[i] == NULL)
 			error_out(T_ERROR);
 		i++;
 	}
-	while (i-- > 0)
-		SDL_WaitThread(thread[i], NULL);
-	SDL_UpdateWindowSurface(frc->window);
-	//help_window(frc);
 }
-
-/*
-** Readies input methods, gets and sets the image trough thread_core and
-** then shows the image in window.
-*/
 
 void			fractol_main(t_fractol *frc)
 {
-	SDL_Event	events;
+	SDL_mutex	*mutex = SDL_CreateMutex();
+	FractolEventHandler	handler(mutex, frc);
 
 	set_default(frc);
-	//mlx_key_hook(frc->win, key_main, frc);
-	//mlx_hook(frc->win, 6, 0, julia_move, frc);
-	//mlx_mouse_hook(frc->win, mouse_main, frc);
+	frc->mutex = mutex;
+	//SDL_CreateThread(event_thread, "Events", &handler);
+	thread_core(frc);
 	while (1)
 	{
-		if (SDL_WaitEvent(&events))
+		handler.eventThreadMain();
+		SDL_LockMutex(frc->mutex);
+		if (frc->donePixel >= WINY)
 		{
-			switch (events.type)
-			{
-			case SDL_KEYDOWN:
-			case SDL_KEYUP:
-				handle_keyboard(events.key, frc);
-				break;
-			case SDL_MOUSEMOTION:
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
-				handle_mouse(&events, frc);
-				break;
-			case SDL_MOUSEWHEEL:
-				handle_mousewheel(&events.wheel, frc);
-				break;
-			default:
-				break;
-			}
+			SDL_UpdateWindowSurface(frc->window);
+			frc->currPixel = 0;
+			frc->donePixel = 0;
 		}
-		thread_core(frc);
+		SDL_UnlockMutex(frc->mutex);
+		//thread_core(frc);
 	}
 }

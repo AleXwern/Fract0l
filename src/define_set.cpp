@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/15 14:41:36 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/05 21:31:20 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/10 00:17:28 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 ** that is used to calculate color with frc_FRACTAL.
 */
 
-static int	frc_tricorn(t_fractol *frc)
+int				frc_tricorn(s_fractal *frc)
 {
 	int			iter;
 	t_complex	z;
@@ -35,7 +35,7 @@ static int	frc_tricorn(t_fractol *frc)
 	return (iter);
 }
 
-static int	frc_mandelbrot(t_fractol *frc)
+int				frc_mandelbrot(s_fractal *frc)
 {
 	int			iter;
 	t_complex	z;
@@ -53,7 +53,7 @@ static int	frc_mandelbrot(t_fractol *frc)
 	return (iter);
 }
 
-static int	frc_bship(t_fractol *frc)
+int				frc_bship(s_fractal *frc)
 {
 	int			iter;
 	t_complex	z;
@@ -71,7 +71,7 @@ static int	frc_bship(t_fractol *frc)
 	return (iter);
 }
 
-static int	frc_julia(t_fractol *frc)
+int				frc_julia(s_fractal *frc)
 {
 	int			iter;
 	t_complex	z;
@@ -87,19 +87,4 @@ static int	frc_julia(t_fractol *frc)
 		iter++;
 	}
 	return (iter);
-}
-
-int			define_set(t_fractol *frc)
-{
-	switch (frc->fractol)
-	{
-	case 0:
-		return frc_mandelbrot(frc);
-	case 1:
-		return frc_julia(frc);
-	case 2:
-		return frc_bship(frc);
-	default:
-		return frc_tricorn(frc);
-	}
 }

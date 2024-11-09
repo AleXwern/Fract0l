@@ -2,6 +2,8 @@
 Project based on old school project Fractol I did as part of graphics branch in HIVE.
 The aim is to take old C code and find ways to improve it, move it to C++, use C++ features etc, port it to SDL3 etc.
 ![image](./docs/fract01s_example.png)
+![image1](./docs/fract01s_example1.png)
+![image2](./docs/fract01s_example2.png)
 
 # Controls
 1. Click & Drag OR Arrow keys - Move around.

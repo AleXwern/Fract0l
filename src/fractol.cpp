@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/13 15:52:31 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/11 00:10:06 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/11 00:36:01 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void		Fractol::frc_draw(t_fractol *frc)
 	for (uint32_t x = 0; x < WINX; x++)
 	{
 		fractal.c.real = fractal.min.real + x * fractal.factor.real;
-		surfacedata[WINX * pixel + x] = get_color(fractolDef(&fractal) / 50.0f);
+		surfacedata[WINX * pixel + x] = get_color(fractolDef(&fractal) / static_cast<double>(fractal.iter));
 	}
 	SDL_LockMutex(mutex);
 	donePixel++;

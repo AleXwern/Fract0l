@@ -14,3 +14,8 @@ The aim is to take old C code and find ways to improve it, move it to C++, use C
 6. C - Change colour.
 7. F - Change fractal.
 8. ESC - Exit.
+9. J - (Un)fix Julia fractal. Makes it change shape based on mouse position.
+
+# TO DO
+1. Make it smoother. Faster faster faster!
+2. Improve parallellism. While this currently works "well enough" there are some minor noticeable race conditions.

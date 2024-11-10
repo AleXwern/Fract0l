@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/07 13:24:47 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/09 23:34:10 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/10 23:45:37 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,30 +31,9 @@
 /*
 ** Window size.
 */
-# define WINX		704
-# define WINY		704
-
-/*
-** Tagged keys.
-*/
-# define ESC		53
-# define KEY_R		15
-# define KEY_C		8
-# define KEY_ONE	18
-# define KEY_TWO	19
-# define KEY_TRE	20
-# define KEY_FOU	21
-# define SPACE		49
-# define UP			126
-# define DOWN		125
-# define LEFT		123
-# define RIGHT		124
-# define SCR_UPH	4
-# define SCR_DOWN	5
-# define NUM_PLU	69
-# define NUM_MIN	78
-# define SLASH		75
-# define STAR		67
+constexpr uint32_t WINX = 704;
+constexpr uint32_t WINY = 704;
+constexpr uint32_t PIXELS = WINX * WINY;
 
 /*
 ** Help data

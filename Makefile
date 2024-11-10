@@ -6,13 +6,13 @@
 #    By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/01 10:42:05 by alexwern          #+#    #+#              #
-#    Updated: 2024/11/09 20:20:03 by AleXwern         ###   ########.fr        #
+#    Updated: 2024/11/10 23:10:11 by AleXwern         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	= fractol.exe
 FLAG	= -m64 -Wall -Wextra -Werror -std=c++17
-SRCFILE	= color.cpp define_set.cpp events.cpp fractol.cpp key_input.cpp main.cpp
+SRCFILE	= color.cpp define_set.cpp events.cpp fractol.cpp main.cpp
 OBJ		= $(addprefix ./obj/,$(SRCFILE:.cpp=.o))
 LIBFT	= C:/SDL/SDL2-2.0.12/lib/x64/SDL2.lib
 INCLS	= -I ./includes -I Libft/includes -I ./tests -I wordwrap/includes -I romannumerals/includes -I queue/includes -I primefactors/includes -I mastermind/includes -I sort/includes -I catch2/extras

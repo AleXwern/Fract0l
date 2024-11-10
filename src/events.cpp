@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 21:01:55 by AleXwern          #+#    #+#             */
-/*   Updated: 2024/11/09 23:12:07 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/10 23:37:23 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,6 @@
 #include "fractol.hpp"
 #include "value.hpp"
 #include <stdio.h>
-
-int			event_thread(void *ptr)
-{
-	FractolEventHandler	handler = *static_cast<FractolEventHandler*>(ptr);
-
-	handler.eventThreadMain();
-	return 1;
-}
 
 int			FractolEventHandler::eventThreadMain(void)
 {
@@ -62,7 +54,6 @@ void		FractolEventHandler::handle_keyboard(SDL_KeyboardEvent event, t_fractol *f
 	
 	#pragma GCC diagnostic push		// Disable GCC freaking out for not having every single key here
 	#pragma GCC diagnostic ignored "-Wswitch"
-	SDL_LockMutex(evMutex);
 	switch (event.keysym.scancode)
 	{
 	case SDL_SCANCODE_ESCAPE:
@@ -75,29 +66,36 @@ void		FractolEventHandler::handle_keyboard(SDL_KeyboardEvent event, t_fractol *f
 		frc->colourset = (frc->colourset + 1) % 4;
 		break;
 	case SDL_SCANCODE_KP_PLUS:
-		frc->iter = frc->iter+1 < 100 ? frc->iter+1 : 100;
-		printf("Iteratiuns %d\n", frc->iter);
+		frc->fractal.iter++;
+		printf("Iterations %d\n", frc->fractal.iter);
 		break;
 	case SDL_SCANCODE_KP_MINUS:
-		frc->iter = frc->iter-1 > 1 ? frc->iter-1 : 1;
-		printf("Iteratiuns %d\n", frc->iter);
+		frc->fractal.iter--;
+		printf("Iterations %d\n", frc->fractal.iter);
 		break;
 	case SDL_SCANCODE_UP:
 	case SDL_SCANCODE_DOWN:
 		direction = (event.keysym.scancode - 81) * 2 - 1;
-		delta = frc->max.imaginary - frc->min.imaginary;
-		frc->min.imaginary += delta * 0.05 * -direction;
-		frc->max.imaginary += delta * 0.05 * -direction;
+		delta = frc->fractal.max.imaginary - frc->fractal.min.imaginary;
+		frc->fractal.min.imaginary += delta * 0.05 * -direction;
+		frc->fractal.max.imaginary += delta * 0.05 * -direction;
 		break;
 	case SDL_SCANCODE_LEFT:
 	case SDL_SCANCODE_RIGHT:
 		direction = (event.keysym.scancode - 79) * 2 - 1;
-		delta = frc->max.real - frc->min.real;
-		frc->min.real += delta * 0.05 * direction;
-		frc->max.real += delta * 0.05 * direction;
+		delta = frc->fractal.max.real - frc->fractal.min.real;
+		frc->fractal.min.real += delta * 0.05 * direction;
+		frc->fractal.max.real += delta * 0.05 * direction;
 		break;
 	case SDL_SCANCODE_R:
 		set_default(frc);
+		break;
+	case SDL_SCANCODE_E:
+		frc->fractal.iter = 0xffff;
+		printf("Iterations %d\n", frc->fractal.iter);
+		break;
+	case SDL_SCANCODE_J:
+		frc->fixjulia = frc->fixjulia ? false : true;
 		break;
 	case SDL_SCANCODE_1:
 	case SDL_SCANCODE_2:
@@ -109,13 +107,12 @@ void		FractolEventHandler::handle_keyboard(SDL_KeyboardEvent event, t_fractol *f
 	case SDL_SCANCODE_8:
 	case SDL_SCANCODE_9:
 	case SDL_SCANCODE_0:
-		frc->iter = (event.keysym.scancode - 29) * 10;
-		printf("Iteratiuns %d\n", frc->iter);
+		frc->fractal.iter = (event.keysym.scancode - 29) * 10;
+		printf("Iteratiuns %d\n", frc->fractal.iter);
 		break;
 	default:
 		break;
 	}
-	SDL_UnlockMutex(evMutex);
 	#pragma GCC diagnostic pop
 }
 
@@ -127,14 +124,17 @@ void	FractolEventHandler::handle_mouse(SDL_Event *event, t_fractol *frc)
 	isPressed = event->button.button == 1 ? true : false;
 	if (isPressed)
 	{
-		delta = {(frc->max.real - frc->min.real) * ((oldpos.real - event->motion.x) / WINX),
-				 (frc->max.imaginary - frc->min.imaginary) * ((oldpos.imaginary - event->motion.y) / WINY)};
-		SDL_LockMutex(evMutex);
-		frc->min.real += delta.real;
-		frc->max.real += delta.real;
-		frc->min.imaginary -= delta.imaginary;
-		frc->max.imaginary -= delta.imaginary;
-		SDL_UnlockMutex(evMutex);
+		delta = {(frc->fractal.max.real - frc->fractal.min.real) * ((oldpos.real - event->motion.x) / WINX),
+				 (frc->fractal.max.imaginary - frc->fractal.min.imaginary) * ((oldpos.imaginary - event->motion.y) / WINY)};
+		frc->fractal.min.real += delta.real;
+		frc->fractal.max.real += delta.real;
+		frc->fractal.min.imaginary -= delta.imaginary;
+		frc->fractal.max.imaginary -= delta.imaginary;
+	}
+	if (frc->fixjulia)
+	{
+		frc->fractal.jul = set_complex(4 * ((double)event->motion.x / WINX - 0.5),
+								4 * ((double)(WINY - event->motion.x) / WINY - 0.5));
 	}
 	oldpos = {static_cast<double>(event->motion.x), static_cast<double>(event->motion.y)};
 }
@@ -148,12 +148,10 @@ void	FractolEventHandler::handle_mousewheel(SDL_MouseWheelEvent *event, t_fracto
 		zoom = 1.0 * 0.9;
 	else
 		zoom = 1.0 / 0.9;
-	target = {1.00 * oldpos.real / (WINX / (frc->max.real - frc->min.real)) + frc->min.real,
-			-1.0 * oldpos.imaginary / (WINY / (frc->max.imaginary - frc->min.imaginary)) + frc->max.imaginary};
-	SDL_LockMutex(evMutex);
-	frc->min.real = ((frc->min.real - target.real) * zoom) + target.real;
-	frc->min.imaginary = ((frc->min.imaginary - target.imaginary) * zoom) + target.imaginary;
-	frc->max.real = ((frc->max.real - target.real) * zoom) + target.real;
-	frc->max.imaginary = ((frc->max.imaginary - target.imaginary) * zoom) + target.imaginary;
-	SDL_UnlockMutex(evMutex);
+	target = {1.00 * oldpos.real / (WINX / (frc->fractal.max.real - frc->fractal.min.real)) + frc->fractal.min.real,
+			-1.0 * oldpos.imaginary / (WINY / (frc->fractal.max.imaginary - frc->fractal.min.imaginary)) + frc->fractal.max.imaginary};
+	frc->fractal.min.real = ((frc->fractal.min.real - target.real) * zoom) + target.real;
+	frc->fractal.min.imaginary = ((frc->fractal.min.imaginary - target.imaginary) * zoom) + target.imaginary;
+	frc->fractal.max.real = ((frc->fractal.max.real - target.real) * zoom) + target.real;
+	frc->fractal.max.imaginary = ((frc->fractal.max.imaginary - target.imaginary) * zoom) + target.imaginary;
 }

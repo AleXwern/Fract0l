@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/13 15:33:27 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/05 20:30:51 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/10 23:35:27 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+/*
+**	THIS FINE IS NOT USED FOR NOW
+*/
 
 /*
 ** Builds the needed string+number string that will be shown.

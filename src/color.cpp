@@ -28,26 +28,26 @@
 ** T is a double value between 0 and 1.
 */
 
-uint32_t		get_color(double currIter, int set, SDL_PixelFormat *format)
+uint32_t		Fractol::get_color(double currIter)
 {
 	t_color		colour;
 
-	switch (set)
+	switch (colourset)
 	{
 	case 0:
-		colour.red = (12 * pow((1 - currIter), 0) * pow(currIter, 3) * 255);
-		colour.blue = (13 * pow((1 - currIter), 2) * pow(currIter, 2) * 255);
-		colour.green = (14 * pow((1 - currIter), 2) * pow(currIter, 1) * 255);
+		colour.red = (12 * pow(currIter, 3) * 255);
+		colour.blue = (13 * (1 - currIter) * (1 - currIter) * currIter * currIter * 255);
+		colour.green = (14 * (1 - currIter) * (1 - currIter) * currIter * 255);
 		break;
 	case 1:
-		colour.red = (16 * pow((1 - currIter), 2) * pow(currIter, 2) * 240);
-		colour.blue = (16 * pow((1 - currIter), 2) * pow(currIter, 2) * 240);
-		colour.green = (16 * pow((1 - currIter), 2) * pow(currIter, 2) * 240);
+		colour.red = (16 * (1 - currIter) * (1 - currIter) * currIter * currIter * 240);
+		colour.blue = (16 * (1 - currIter) * (1 - currIter) * currIter * currIter * 240);
+		colour.green = (16 * (1 - currIter) * (1 - currIter) * currIter * currIter * 240);
 		break;
 	case 2:
-		colour.red = (16 * pow((1 - currIter), 1) * 255);
-		colour.blue = (16 * pow((1 - currIter), 4) + pow(currIter, 1) * 255);
-		colour.green = (16 * pow((1 - currIter), 4) + pow(currIter, 1) * 255);
+		colour.red = (16 * (1 - currIter) * 255);
+		colour.blue = (16 * pow((1 - currIter), 4) + currIter * 255);
+		colour.green = (16 * pow((1 - currIter), 4) + currIter * 255);
 		break;
 	case 3:
 		colour.red = 255 / currIter;

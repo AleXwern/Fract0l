@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/07 13:12:21 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/10 00:42:13 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/11 00:10:05 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,26 +33,17 @@ typedef struct		s_complex
 ** int set	= what the current set is
 ** int 1-4  = color
 */
-typedef struct		s_color
+typedef struct	s_color
 {
-	unsigned int	set;
-	union
-	{
-		uint32_t	colour;
-		struct
-		{
-			uint8_t	red;
-			uint8_t	blue;
-			uint8_t	green;
-			uint8_t alpha;
-		};
-		
-	};
-}					t_color;
+				uint8_t	red;
+				uint8_t	blue;
+				uint8_t	green;
+				uint8_t alpha;
+}				t_color;
 
 struct			s_fractal
 {
-	int			iter;
+	uint16_t	iter;
 	t_complex	max;
 	t_complex	min;
 	t_complex	factor;
@@ -88,18 +79,11 @@ typedef struct		s_fractol
 	SDL_Texture		*texture;
 	SDL_mutex		*mutex;
 	uint8_t			threads;
-	t_color			color;
 	uint8_t			redefine;
 	int				fractol;
-	int				iter;
 	int				colourset;
-	int				ishelp;
-	int				fixjulia;
-	t_complex		max;
-	t_complex		min;
-	t_complex		factor;
-	t_complex		c;
-	t_complex		jul;
+	bool			fixjulia;
+	s_fractal		fractal;
 	uint32_t		currPixel;
 	uint32_t		donePixel;
 }					t_fractol;
@@ -112,11 +96,18 @@ public:
 	void			redefine_fracal(t_fractol *frc);
 	void			frc_draw(t_fractol *frc);
 private:
-	void			set_pixel(t_fractol *frc, SDL_Surface *surface, int x, int y);
+	uint32_t		get_color(double currIter);
 
 	s_fractal		fractal;
 	int				(*fractolDef)(s_fractal*);
 	uint8_t			id;
+	uint32_t		pixel;
+	int				&colourset;
+	uint32_t		&currPixel;
+	uint32_t		&donePixel;
+	SDL_mutex		*mutex;
+	uint32_t		*surfacedata;
+	SDL_PixelFormat	*format;
 };
 
 
@@ -127,19 +118,8 @@ void				help_window(t_fractol *frc);
 void				set_default(t_fractol *frc);
 void				thread_core(t_fractol *frc);
 
-int					define_set(t_fractol *frc);
-int					julia_move(int x, int y, t_fractol *frc);
-int					key_main(int key, t_fractol *frc);
-int					mouse_main(int key, int x, int y, t_fractol *frc);
-
 uint32_t			get_color(double currIter, int set, SDL_PixelFormat *format);
 t_complex			set_complex(double rn, double in);
-
-void				handle_keyboard(SDL_KeyboardEvent event, t_fractol *frc);
-void				handle_mouse(SDL_Event *event, t_fractol *frc);
-void				handle_mousewheel(SDL_MouseWheelEvent *event, t_fractol *frc);
-
-int					event_thread(void *ptr);
 
 int					frc_tricorn(s_fractal *frc);
 int					frc_mandelbrot(s_fractal *frc);

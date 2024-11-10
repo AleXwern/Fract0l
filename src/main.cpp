@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/07 13:18:02 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/10 00:26:40 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/10 23:34:59 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,17 +47,18 @@ static void	init_image(t_fractol *frc)
 void			set_default(t_fractol *frc)
 {
 	frc->threads = 100;
-	frc->min = set_complex(-2.0, -2.0);
-	frc->max.real = 2.0;
-	frc->max.imaginary = frc->min.imaginary + (frc->max.real - frc->min.real) *
-			(double)WINY / (double)WINX;
-	frc->jul = set_complex(-0.4, 0.6);
-	frc->color.set = 0;
-	frc->iter = 30;
+	frc->fractal.min = set_complex(-2.0, -2.0);
+	frc->fractal.max.real = 2.0;
+	frc->fractal.max.imaginary = frc->fractal.min.imaginary +
+			(frc->fractal.max.real - frc->fractal.min.real) *
+			static_cast<double>(WINY) / static_cast<double>(WINX);
+	frc->fractal.jul = set_complex(-0.4, 0.6);
+	frc->fractal.iter = 30;
 	frc->colourset = 0;
 	frc->currPixel = 0;
 	frc->donePixel = 0;
 	frc->redefine = 0xff;
+	frc->fractol = 0;
 }
 
 /*
@@ -73,25 +74,6 @@ void			error_out(const char *msg)
 }
 
 /*
-** A short function to determine what fractal is given as ARGV
-** If an incorrct argument is given, program leaves trough error_out.
-*/
-
-static void		define_fratol(t_fractol *frc, const char *av)
-{
-	if (!strcmp(av, "mandelbrot"))
-		frc->fractol = 0;
-	else if (!strcmp(av, "julia"))
-		frc->fractol = 1;
-	else if (!strcmp(av, "bship"))
-		frc->fractol = 2;
-	else if (!strcmp(av, "psecorn"))
-		frc->fractol = 3;
-	else
-		frc->fractol = 0;
-}
-
-/*
 ** Function main. Sets up some core features that are never modified in future.
 ** fractol_main(frc) puts program in set loop
 ** ft_putendl(OOPS) should never run.
@@ -100,16 +82,10 @@ static void		define_fratol(t_fractol *frc, const char *av)
 
 int			WinMain(void)
 {
-	t_fractol	*frc;
+	t_fractol	frc;
 
-	if (!(frc = (t_fractol*)malloc(sizeof(t_fractol))))
-	{
-		printf(MEM_ERROR);
-		return (0);
-	}
-	define_fratol(frc, "d");
-	init_image(frc);
-	fractol_main(frc);
+	init_image(&frc);
+	fractol_main(&frc);
 	printf(OOPS);
 	return (0);
 }

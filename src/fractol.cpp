@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/13 15:52:31 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/10 00:42:12 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/11 00:10:06 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,21 @@
 
 constexpr int threads = 8;
 
-Fractol::Fractol(t_fractol *frc)
+Fractol::Fractol(t_fractol *frc) :
+	colourset(frc->colourset), currPixel(frc->currPixel), donePixel(frc->donePixel)
 {
-	id = 1 << SDL_GetThreadID(NULL);
+	mutex = frc->mutex;
+	surfacedata = (uint32_t*)frc->surface->pixels;
+	format = frc->surface->format;
+	id = SDL_GetThreadID(NULL);
 	redefine_fracal(frc);
 }
 
 void	Fractol::redefine_fracal(t_fractol *frc)
 {
-	fractal.iter = frc->iter;
-	fractal.max = frc->max;
-	fractal.min = frc->min;
-	fractal.jul = frc->jul;
+	fractal = frc->fractal;
+	fractal.factor = set_complex((fractal.max.real - fractal.min.real) / WINX,
+			(fractal.max.imaginary - fractal.min.imaginary) / WINY);
 	switch (frc->fractol)
 	{
 	case 0:
@@ -55,40 +58,26 @@ t_complex		set_complex(double rn, double in)
 	return (cn);
 }
 
-void		Fractol::set_pixel(t_fractol *frc, SDL_Surface *surface, int x, int y)
-{
-	uint32_t endCol = get_color(fractolDef(&fractal) / 50.0f, frc->colourset, surface->format);
-	uint32_t *surfacedata = (uint32_t*)surface->pixels;
-	surfacedata[WINX * y + x] = endCol;
-}
-
 void		Fractol::frc_draw(t_fractol *frc)
 {
-	int			x = 0;
-	int			pixel;
-
-	SDL_LockMutex(frc->mutex);
-	pixel = frc->currPixel;
-	frc->currPixel++;
-	SDL_UnlockMutex(frc->mutex);
+	SDL_LockMutex(mutex);
+	pixel = currPixel;
+	currPixel++;
+	SDL_UnlockMutex(mutex);
 	if (pixel >= WINY)
 	{
 		redefine_fracal(frc);
-		SDL_Delay(10);
 		return;
 	}
-	fractal.factor = set_complex((fractal.max.real - fractal.min.real) / WINX,
-			(fractal.max.imaginary - fractal.min.imaginary) / WINY);
 	fractal.c.imaginary = fractal.max.imaginary - pixel * fractal.factor.imaginary;
-	while (x < WINX)
+	for (uint32_t x = 0; x < WINX; x++)
 	{
 		fractal.c.real = fractal.min.real + x * fractal.factor.real;
-		set_pixel(frc, frc->surface, x, pixel);
-		x++;
+		surfacedata[WINX * pixel + x] = get_color(fractolDef(&fractal) / 50.0f);
 	}
-	SDL_LockMutex(frc->mutex);
-	frc->donePixel++;
-	SDL_UnlockMutex(frc->mutex);
+	SDL_LockMutex(mutex);
+	donePixel++;
+	SDL_UnlockMutex(mutex);
 }
 
 static int		frc_draw_entry(void *data)
@@ -125,7 +114,6 @@ void			fractol_main(t_fractol *frc)
 
 	set_default(frc);
 	frc->mutex = mutex;
-	//SDL_CreateThread(event_thread, "Events", &handler);
 	thread_core(frc);
 	while (1)
 	{
@@ -138,6 +126,5 @@ void			fractol_main(t_fractol *frc)
 			frc->donePixel = 0;
 		}
 		SDL_UnlockMutex(frc->mutex);
-		//thread_core(frc);
 	}
 }

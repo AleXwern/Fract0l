@@ -6,14 +6,14 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/07 13:12:21 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/11 00:10:05 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/11 19:35:39 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FRACTOL_H
 # define FRACTOL_H
 # include <math.h>
-# include <SDL.h>
+# include <SDL3/SDL.h>
 # include <fcntl.h>
 # include <stdint.h>
 
@@ -77,7 +77,7 @@ typedef struct		s_fractol
 	SDL_Renderer	*renderer;
 	SDL_Surface		*surface;
 	SDL_Texture		*texture;
-	SDL_mutex		*mutex;
+	SDL_Mutex		*mutex;
 	uint8_t			threads;
 	uint8_t			redefine;
 	int				fractol;
@@ -93,21 +93,21 @@ class 				Fractol
 public:
 	Fractol(t_fractol *frc);
 	
-	void			redefine_fracal(t_fractol *frc);
-	void			frc_draw(t_fractol *frc);
+	void					redefine_fracal(t_fractol *frc);
+	void					frc_draw(t_fractol *frc);
 private:
-	uint32_t		get_color(double currIter);
+	uint32_t				get_color(double currIter);
 
-	s_fractal		fractal;
-	int				(*fractolDef)(s_fractal*);
-	uint8_t			id;
-	uint32_t		pixel;
-	int				&colourset;
-	uint32_t		&currPixel;
-	uint32_t		&donePixel;
-	SDL_mutex		*mutex;
-	uint32_t		*surfacedata;
-	SDL_PixelFormat	*format;
+	s_fractal				fractal;
+	int						(*fractolDef)(s_fractal*);
+	uint8_t					id;
+	uint32_t				pixel;
+	int						&colourset;
+	uint32_t				&currPixel;
+	uint32_t				&donePixel;
+	SDL_Mutex				*mutex;
+	uint32_t				*surfacedata;
+	const SDL_PixelFormatDetails	*format;
 };
 
 

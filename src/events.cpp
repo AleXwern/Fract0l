@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 21:01:55 by AleXwern          #+#    #+#             */
-/*   Updated: 2024/11/10 23:37:23 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/11 19:35:01 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,19 +22,19 @@ int			FractolEventHandler::eventThreadMain(void)
 	{
 		switch (events.type)
 		{
-		case SDL_KEYDOWN:
-		case SDL_KEYUP:
+		case SDL_EVENT_KEY_DOWN:
+		case SDL_EVENT_KEY_UP:
 			handle_keyboard(events.key, evFrc);
 			break;
-		case SDL_MOUSEMOTION:
-		case SDL_MOUSEBUTTONDOWN:
-		case SDL_MOUSEBUTTONUP:
+		case SDL_EVENT_MOUSE_MOTION:
+		case SDL_EVENT_MOUSE_BUTTON_DOWN:
+		case SDL_EVENT_MOUSE_BUTTON_UP:
 			handle_mouse(&events, evFrc);
 			break;
-		case SDL_MOUSEWHEEL:
+		case SDL_EVENT_MOUSE_WHEEL:
 			handle_mousewheel(&events.wheel, evFrc);
 			break;
-		case SDL_QUIT:
+		case SDL_EVENT_QUIT:
 			error_out("This is fine");
 			break;
 		default:
@@ -49,12 +49,12 @@ void		FractolEventHandler::handle_keyboard(SDL_KeyboardEvent event, t_fractol *f
 	int		direction;
 	double	delta;
 	
-	if (event.state == SDL_PRESSED)
+	if (event.down)
 		return;
 	
 	#pragma GCC diagnostic push		// Disable GCC freaking out for not having every single key here
 	#pragma GCC diagnostic ignored "-Wswitch"
-	switch (event.keysym.scancode)
+	switch (event.scancode)
 	{
 	case SDL_SCANCODE_ESCAPE:
 		error_out("This is fine");
@@ -75,14 +75,14 @@ void		FractolEventHandler::handle_keyboard(SDL_KeyboardEvent event, t_fractol *f
 		break;
 	case SDL_SCANCODE_UP:
 	case SDL_SCANCODE_DOWN:
-		direction = (event.keysym.scancode - 81) * 2 - 1;
+		direction = (event.scancode - 81) * 2 - 1;
 		delta = frc->fractal.max.imaginary - frc->fractal.min.imaginary;
 		frc->fractal.min.imaginary += delta * 0.05 * -direction;
 		frc->fractal.max.imaginary += delta * 0.05 * -direction;
 		break;
 	case SDL_SCANCODE_LEFT:
 	case SDL_SCANCODE_RIGHT:
-		direction = (event.keysym.scancode - 79) * 2 - 1;
+		direction = (event.scancode - 79) * 2 - 1;
 		delta = frc->fractal.max.real - frc->fractal.min.real;
 		frc->fractal.min.real += delta * 0.05 * direction;
 		frc->fractal.max.real += delta * 0.05 * direction;
@@ -107,7 +107,7 @@ void		FractolEventHandler::handle_keyboard(SDL_KeyboardEvent event, t_fractol *f
 	case SDL_SCANCODE_8:
 	case SDL_SCANCODE_9:
 	case SDL_SCANCODE_0:
-		frc->fractal.iter = (event.keysym.scancode - 29) * 10;
+		frc->fractal.iter = (event.scancode - 29) * 10;
 		printf("Iteratiuns %d\n", frc->fractal.iter);
 		break;
 	default:

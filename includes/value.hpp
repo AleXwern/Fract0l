@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/07 13:24:47 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/10 23:45:37 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/11 00:43:18 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@
 /*
 ** Window size.
 */
-constexpr uint32_t WINX = 704;
-constexpr uint32_t WINY = 704;
+constexpr uint32_t WINX = 1040;
+constexpr uint32_t WINY = 720;
 constexpr uint32_t PIXELS = WINX * WINY;
 
 /*

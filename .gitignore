@@ -1,5 +1,4 @@
 .vscode/**
-frameworks/**
 fractol.exe
 obj/**
 src/obj/**

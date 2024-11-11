@@ -56,5 +56,5 @@ uint32_t		Fractol::get_color(double currIter)
 		break;
 	}
 	colour.alpha = 0xff;
-	return SDL_MapRGBA(format, colour.red, colour.green, colour.blue, colour.alpha);
+	return SDL_MapRGBA(format, NULL, colour.red, colour.green, colour.blue, colour.alpha);
 }

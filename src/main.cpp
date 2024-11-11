@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/07 13:18:02 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/10 23:34:59 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/11 19:51:06 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <SDL3/SDL_main.h>
 
 /*
 ** Initialize image into t_image struct and pull needed data out of it.
@@ -24,11 +25,11 @@
 
 static void	init_image(t_fractol *frc)
 {
-	if (SDL_Init(SDL_INIT_EVERYTHING))
+	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO))
 		error_out("Init error!");
-	if (!(frc->window = SDL_CreateWindow("Fract01s", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINX, WINY, 0)))
+	if (!(frc->window = SDL_CreateWindow("Fract01s", WINX, WINY, 0)))
 		error_out("Window creation error!");
-	if (!(frc->renderer = SDL_CreateRenderer(frc->window, -1, SDL_RENDERER_ACCELERATED)))
+	if (!(frc->renderer = SDL_CreateRenderer(frc->window, NULL)))
 		if (!(frc->renderer = SDL_GetRenderer(frc->window)))
 			error_out("Renderer creation error!");
 	if (!(frc->surface = SDL_GetWindowSurface(frc->window)))
@@ -80,10 +81,11 @@ void			error_out(const char *msg)
 ** ac != 2 exits program with USAGE and incorrect 1 with B_ARG.
 */
 
-int			WinMain(void)
+int main(int argc, char *argv[])
 {
 	t_fractol	frc;
 
+	if (argv && argc) {}
 	init_image(&frc);
 	fractol_main(&frc);
 	printf(OOPS);

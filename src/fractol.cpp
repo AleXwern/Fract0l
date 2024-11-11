@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/13 15:52:31 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/11 00:36:01 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/11 19:36:25 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ Fractol::Fractol(t_fractol *frc) :
 {
 	mutex = frc->mutex;
 	surfacedata = (uint32_t*)frc->surface->pixels;
-	format = frc->surface->format;
+	format = SDL_GetPixelFormatDetails(frc->surface->format);
 	id = SDL_GetThreadID(NULL);
 	redefine_fracal(frc);
 }
@@ -109,7 +109,7 @@ void			thread_core(t_fractol *frc)
 
 void			fractol_main(t_fractol *frc)
 {
-	SDL_mutex	*mutex = SDL_CreateMutex();
+	SDL_Mutex	*mutex = SDL_CreateMutex();
 	FractolEventHandler	handler(mutex, frc);
 
 	set_default(frc);

@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 20:22:56 by AleXwern          #+#    #+#             */
-/*   Updated: 2024/11/11 19:31:05 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/13 21:43:17 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 class	FractolEventHandler
 {
 public:
-	FractolEventHandler(SDL_Mutex *mutex, t_fractol *frc) :
-		evMutex(mutex), evFrc(frc)
+	FractolEventHandler(SDL_Mutex *mutex, t_fractol *frc, s_fractal *fractal) :
+		evMutex(mutex), evFrc(frc), evFractal(fractal)
 	{
 	}
 
@@ -28,12 +28,13 @@ public:
 
 private:
 
-	void	handle_keyboard(SDL_KeyboardEvent event, t_fractol *frc);
-	void	handle_mouse(SDL_Event *event, t_fractol *frc);
-	void	handle_mousewheel(SDL_MouseWheelEvent *event, t_fractol *frc);
+	void	handle_keyboard(SDL_KeyboardEvent event);
+	void	handle_mouse(SDL_Event *event);
+	void	handle_mousewheel(SDL_MouseWheelEvent *event);
 
 	SDL_Event	events;
 	SDL_Mutex	*evMutex;
 	t_fractol	*evFrc;
 	t_complex	oldpos;
+	s_fractal	*evFractal;
 };

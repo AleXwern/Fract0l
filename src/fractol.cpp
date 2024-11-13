@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/13 15:52:31 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/11 19:36:25 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/13 22:03:32 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ Fractol::Fractol(t_fractol *frc) :
 	mutex = frc->mutex;
 	surfacedata = (uint32_t*)frc->surface->pixels;
 	format = SDL_GetPixelFormatDetails(frc->surface->format);
-	id = SDL_GetThreadID(NULL);
+	id = SDL_GetCurrentThreadID();
 	redefine_fracal(frc);
 }
 
@@ -94,15 +94,14 @@ static int		frc_draw_entry(void *data)
 
 void			thread_core(t_fractol *frc)
 {
-	SDL_Thread*	thread[threads];
-	int			i;
+	SDL_Thread*	thread;
 
-	i = 0;
-	while (i < threads)
+	for (int i = 0; i < threads; i++)
 	{
-		thread[i] = SDL_CreateThread(frc_draw_entry, "Render Thread", frc);
-		if (thread[i] == NULL)
+		thread = SDL_CreateThread(frc_draw_entry, "Render Thread", frc);
+		if (thread == NULL)
 			error_out(T_ERROR);
+		SDL_DetachThread(thread);
 		i++;
 	}
 }
@@ -110,21 +109,27 @@ void			thread_core(t_fractol *frc)
 void			fractol_main(t_fractol *frc)
 {
 	SDL_Mutex	*mutex = SDL_CreateMutex();
-	FractolEventHandler	handler(mutex, frc);
+	SDL_Mutex	*eventLock = SDL_CreateMutex();
+	s_fractal	fractal;
+	FractolEventHandler	handler(eventLock, frc, &fractal);
 
 	set_default(frc);
+	setDefaultFractalValues(&fractal);
 	frc->mutex = mutex;
 	thread_core(frc);
 	while (1)
 	{
 		handler.eventThreadMain();
-		SDL_LockMutex(frc->mutex);
+		SDL_LockMutex(mutex);
 		if (frc->donePixel >= WINY)
 		{
 			SDL_UpdateWindowSurface(frc->window);
+			SDL_LockMutex(eventLock);
+			frc->fractal = fractal;
+			SDL_UnlockMutex(eventLock);
 			frc->currPixel = 0;
 			frc->donePixel = 0;
 		}
-		SDL_UnlockMutex(frc->mutex);
+		SDL_UnlockMutex(mutex);
 	}
 }

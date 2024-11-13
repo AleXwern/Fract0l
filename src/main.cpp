@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/07 13:18:02 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/11 19:51:06 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/13 22:03:16 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,22 +39,21 @@ static void	init_image(t_fractol *frc)
 	SDL_ShowWindow(frc->window);
 }
 
-/*
-** Sets some standard values.
-** First set when FRC is constructed
-** Called again when image needs to be reset.
-*/
+void			setDefaultFractalValues(s_fractal *fractal)
+{
+	fractal->min = set_complex(-2.0, -2.0);
+	fractal->max.real = 2.0;
+	fractal->max.imaginary = fractal->min.imaginary +
+			(fractal->max.real - fractal->min.real) *
+			static_cast<double>(WINY) / static_cast<double>(WINX);
+	fractal->jul = set_complex(-0.4, 0.6);
+	fractal->iter = 30;
+}
 
 void			set_default(t_fractol *frc)
 {
 	frc->threads = 100;
-	frc->fractal.min = set_complex(-2.0, -2.0);
-	frc->fractal.max.real = 2.0;
-	frc->fractal.max.imaginary = frc->fractal.min.imaginary +
-			(frc->fractal.max.real - frc->fractal.min.real) *
-			static_cast<double>(WINY) / static_cast<double>(WINX);
-	frc->fractal.jul = set_complex(-0.4, 0.6);
-	frc->fractal.iter = 30;
+	setDefaultFractalValues(&frc->fractal);
 	frc->colourset = 0;
 	frc->currPixel = 0;
 	frc->donePixel = 0;

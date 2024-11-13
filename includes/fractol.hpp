@@ -6,7 +6,7 @@
 /*   By: AleXwern <AleXwern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/07 13:12:21 by anystrom          #+#    #+#             */
-/*   Updated: 2024/11/11 19:35:39 by AleXwern         ###   ########.fr       */
+/*   Updated: 2024/11/13 22:06:32 by AleXwern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ void				error_out(const char *msg);
 void				fractol_main(t_fractol *frc);
 void				help_window(t_fractol *frc);
 void				set_default(t_fractol *frc);
+void				setDefaultFractalValues(s_fractal *fractal);
 void				thread_core(t_fractol *frc);
 
 uint32_t			get_color(double currIter, int set, SDL_PixelFormat *format);
